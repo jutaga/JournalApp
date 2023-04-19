@@ -1,7 +1,8 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { chekingCredentials, login, logout } from "./authSlice"
-import { loginWithEmailPassword, registerUserWithEmail, singInWithGoogle } from "../../firebase/providers";
+import { loginWithEmailPassword, logoutFirebase, registerUserWithEmail, singInWithGoogle } from "../../firebase/providers";
 import { FormRegister, FormState } from "../../hooks/hooks.type";
+import { FirebaseError } from "firebase/app";
 
 export const chechingAuthentication = (email: string, password: string) => {
 
@@ -56,6 +57,20 @@ export const startLoginWithEmailPassword = ({ email, password }: FormState) => {
         if (resp) {
             if (!resp.ok) return dispatch(logout(resp));
             dispatch(login(resp));
+        }
+    }
+}
+
+export const startLogout = () => {
+    return async (dispatch: Dispatch) => {
+        try {
+            await logoutFirebase();
+            dispatch(logout({ errorMessage: null }));
+
+        } catch (error) {
+            if (error instanceof FirebaseError) {
+                dispatch(logout({ errorMessage: error.message }));
+            }
         }
     }
 }
