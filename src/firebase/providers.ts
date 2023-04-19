@@ -1,6 +1,7 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { FirebaseAuth } from "./config";
 import { FirebaseError } from "firebase/app";
+import { FormRegister } from "../hooks/hooks.type";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -31,4 +32,34 @@ export const singInWithGoogle = async () => {
             }
         }
     }
-}   
+}
+
+export const registerUserWithEmail = async ({ email, password, displayName }: FormRegister) => {
+
+    try {
+        console.log({ email, password, displayName });
+        const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
+        const { uid, photoURL } = resp.user;
+        console.log(resp);
+
+        //Actualizar Firebase
+        if (FirebaseAuth.currentUser) {
+            await updateProfile(FirebaseAuth.currentUser, { displayName });
+        }
+
+        return {
+            ok: true,
+            uid, photoURL, email, displayName
+        }
+
+    } catch (error) {
+
+        if (error instanceof FirebaseError) {
+            return {
+                ok: false,
+                errorMessage: error.message,
+            }
+        }
+    }
+
+}

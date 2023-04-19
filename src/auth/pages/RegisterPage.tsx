@@ -1,8 +1,12 @@
 import { Link as RouterLink } from 'react-router-dom'
-import { Grid, TextField, Button, Typography, Link } from '@mui/material'
+import { Grid, TextField, Button, Typography, Link, Alert } from '@mui/material'
 import { AuthLayout } from '../layout/AuthLayout'
 import { useFormRegister } from '../../hooks/useForm'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { startCreatingUserWithEmailPasswords } from '../../store/auth/thunks'
+import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit'
+import { RootState } from '../../store/store'
 interface Errors {
   email: boolean,
   password: boolean,
@@ -26,8 +30,12 @@ const formData = {
 
 export const RegisterPage = () => {
 
+  const dispatch: ThunkDispatch<{}, {}, AnyAction> = useDispatch();
   const { displayName, email, password, onInputChange, formState } = useFormRegister(formData);
   const [errorForm, setErrorForm] = useState(errorsData);
+
+  const { status, errorMessage } = useSelector((state: RootState) => state.auth);
+  const isCheckingAuthentication = useMemo(() => status === 'checking', [status]);
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -71,7 +79,7 @@ export const RegisterPage = () => {
     }
 
     if (!hasError) {
-      console.log(formState);
+      dispatch(startCreatingUserWithEmailPasswords(formState));
     }
 
     setErrorForm(newErrors);
@@ -82,10 +90,10 @@ export const RegisterPage = () => {
         <Grid container>
 
           <Grid item xs={12} sx={{ mt: 2 }}>
-            <TextField error={errorForm['displayName']} helperText={errorForm['displayName'] && 'El nombre debe ser valido'} value={displayName} name='displayName' onChange={onInputChange} label='Nombre Completo' type="text" placeholder="Tu Nombre" fullWidth />
+            <TextField autoComplete='off' error={errorForm['displayName']} helperText={errorForm['displayName'] && 'El nombre debe ser valido'} value={displayName} name='displayName' onChange={onInputChange} label='Nombre Completo' type="text" placeholder="Tu Nombre" fullWidth />
           </Grid>
           <Grid item xs={12} sx={{ mt: 2 }}>
-            <TextField helperText={errorForm['email'] && 'El email debe ser valido'} error={errorForm['email']} value={email} name='email' onChange={onInputChange} label='Correo' type="email" placeholder="Correo@correo.com" fullWidth />
+            <TextField autoComplete='off' helperText={errorForm['email'] && 'El email debe ser valido'} error={errorForm['email']} value={email} name='email' onChange={onInputChange} label='Correo' type="email" placeholder="Correo@correo.com" fullWidth />
           </Grid>
 
           <Grid item xs={12} sx={{ mt: 2 }}>
@@ -93,8 +101,12 @@ export const RegisterPage = () => {
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
+            <Grid item xs={12} display={!!errorMessage ? '' : 'none'} sx={{ mt: 2 }}>
+              <Alert severity='error' >{errorMessage}</Alert>
+            </Grid>
+            
             <Grid item xs={12} sx={{ mt: 2 }}>
-              <Button type='submit' variant='contained' fullWidth>Crear Cuenta</Button>
+              <Button disabled={isCheckingAuthentication} type='submit' variant='contained' fullWidth>Crear Cuenta</Button>
             </Grid>
           </Grid>
 

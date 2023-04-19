@@ -37,7 +37,7 @@ export const useForm = (initialForm: FormState) => {
 
 export const useFormRegister = (initialForm: FormRegister) => {
 
-    const [formState, setFormState] = useState(initialForm);
+    const [formState, setFormState] = useState<FormRegister>(initialForm);
 
     const onInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = target;
