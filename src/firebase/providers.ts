@@ -1,7 +1,7 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
 import { FirebaseAuth } from "./config";
 import { FirebaseError } from "firebase/app";
-import { FormRegister } from "../hooks/hooks.type";
+import { FormRegister, FormState } from "../hooks/hooks.type";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -62,4 +62,27 @@ export const registerUserWithEmail = async ({ email, password, displayName }: Fo
         }
     }
 
+}
+
+export const loginWithEmailPassword = async ({ email, password }: FormState) => {
+
+    try {
+
+        const resp = await signInWithEmailAndPassword(FirebaseAuth, email, password);
+        const { uid, photoURL, displayName } = resp.user;
+
+        return {
+            ok: true,
+            uid, photoURL, displayName
+        }
+
+
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            return {
+                ok: false,
+                errorMessage: error.message,
+            }
+        }
+    }
 }

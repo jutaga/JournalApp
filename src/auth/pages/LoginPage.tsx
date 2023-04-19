@@ -1,7 +1,7 @@
 
 import { AuthLayout } from '../layout/AuthLayout'
-import { Button, Grid, Link, TextField, Typography } from "@mui/material"
-import { chechingAuthentication, startGoogleSignIn } from '../../store/auth/thunks'
+import { Alert, Button, Grid, Link, TextField, Typography } from "@mui/material"
+import { startGoogleSignIn, startLoginWithEmailPassword } from '../../store/auth/thunks'
 import { Google } from "@mui/icons-material"
 import { Link as RouterLink } from 'react-router-dom'
 import { RootState } from '../../store/store'
@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 
 export const LoginPage = () => {
 
-  const { status } = useSelector((state: RootState) => state.auth);
+  const { status, errorMessage } = useSelector((state: RootState) => state.auth);
 
   const dispatch = useAppDispatch()
 
@@ -26,7 +26,8 @@ export const LoginPage = () => {
   const onSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    dispatch(chechingAuthentication(email, password));
+    dispatch(startLoginWithEmailPassword({ email, password }));
+
   }
 
   const onGoogleSignIn = () => {
@@ -47,6 +48,12 @@ export const LoginPage = () => {
 
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField onChange={onInputChange} value={password} name='password' label='Contraseña' type="password" placeholder="Contraseña" fullWidth />
+          </Grid>
+
+          <Grid container>
+            <Grid item xs={12} display={!!errorMessage ? '' : 'none'} sx={{ mt: 2 }}>
+              <Alert severity='error' >{errorMessage}</Alert>
+            </Grid>
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>

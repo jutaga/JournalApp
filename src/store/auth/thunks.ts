@@ -1,7 +1,7 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { chekingCredentials, login, logout } from "./authSlice"
-import { registerUserWithEmail, singInWithGoogle } from "../../firebase/providers";
-import { FormRegister } from "../../hooks/hooks.type";
+import { loginWithEmailPassword, registerUserWithEmail, singInWithGoogle } from "../../firebase/providers";
+import { FormRegister, FormState } from "../../hooks/hooks.type";
 
 export const chechingAuthentication = (email: string, password: string) => {
 
@@ -43,5 +43,19 @@ export const startCreatingUserWithEmailPasswords = ({ email, password, displayNa
 
         }
 
+    }
+}
+
+export const startLoginWithEmailPassword = ({ email, password }: FormState) => {
+    return async (dispatch: Dispatch) => {
+        dispatch(chekingCredentials());
+
+        const resp = await loginWithEmailPassword({ email, password });
+        console.log(resp);
+
+        if (resp) {
+            if (!resp.ok) return dispatch(logout(resp));
+            dispatch(login(resp));
+        }
     }
 }
