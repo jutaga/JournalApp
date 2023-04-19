@@ -64,7 +64,7 @@ export const RegisterPage = () => {
         hasError = true;
       }
 
-      if (password === '') {
+      if (password === '' || password.length <= 6) {
         newErrors.password = true;
         hasError = true;
       }
@@ -89,7 +89,7 @@ export const RegisterPage = () => {
           </Grid>
 
           <Grid item xs={12} sx={{ mt: 2 }}>
-            <TextField helperText={errorForm['password'] && 'El password debe ser valido'} error={errorForm['password']} value={password} name='password' onChange={onInputChange} label='Contraseña' type="password" placeholder="Contraseña" fullWidth />
+            <TextField helperText={errorForm['password'] && 'El password debe ser mayor a 6 Caracteres'} error={errorForm['password']} value={password} name='password' onChange={onInputChange} label='Contraseña' type="password" placeholder="Contraseña" fullWidth />
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
