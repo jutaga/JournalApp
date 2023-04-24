@@ -10,16 +10,18 @@ import { useForm } from '../../hooks/useForm'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux';
 
+const formData = {
+  email: '',
+  password: ''
+}
+
 export const LoginPage = () => {
 
   const { status, errorMessage } = useSelector((state: RootState) => state.auth);
 
   const dispatch = useAppDispatch()
 
-  const { email, password, onInputChange } = useForm({
-    email: '',
-    password: ''
-  });
+  const { email, password, onInputChange } = useForm(formData);
 
   const isAuthenticating = useMemo(() => status === 'cheking', [status]);
 
@@ -40,7 +42,7 @@ export const LoginPage = () => {
   return (
 
     <AuthLayout title='Login' >
-      <form onSubmit={onSubmit}  className='animate__animated animate__fadeIn animate__faster' >
+      <form onSubmit={onSubmit} className='animate__animated animate__fadeIn animate__faster' >
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField onChange={onInputChange} value={email} name='email' label='Correo' type="email" placeholder="Correo@correo.com" fullWidth />

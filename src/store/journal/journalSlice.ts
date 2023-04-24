@@ -8,18 +8,19 @@ interface ActiveNote {
     imageUrls: string[],
 }
 
-interface journalState {
+interface JournalState {
     isSaving: boolean,
     messageSaved: string,
     notes: any[],
     active: ActiveNote | null
 }
 
-const initialState: journalState = {
+const initialState: JournalState = {
     isSaving: false,
     messageSaved: '',
     notes: [],
     active: null,
+    
     /*     active: {
             id: 'ABC123',
             title: '',
@@ -44,14 +45,29 @@ export const journalSlice = createSlice({
         },
         setActiveNote: (state, action) => {
             state.active = action.payload;
+            state.messageSaved = '';
         },
-        setNote: (state, action) => {
-
+        setNotes: (state, action) => {
+            state.notes = action.payload;
         },
         setSaving: (state) => {
-
+            state.isSaving = true;
+            state.messageSaved = '';
         },
         updateNote: (state, action) => {
+            state.isSaving = false;
+            state.notes = state.notes.map(note => {
+                if(note.id === action.payload.id){
+                    return action.payload
+                }
+                return note
+            })
+
+            state.messageSaved = `${action.payload.title}, Actualizada Correctamente!`
+        },
+        setPhotosToActiveNote : (state, action) => {
+            state.active!.imageUrls = [...state.active!.imageUrls, ...action.payload];
+            state.isSaving = false;
 
         },
         deleteNoteById: (state, action) => {
@@ -66,8 +82,9 @@ export const {
     deleteNoteById,
     savingNewNote,
     setActiveNote,
-    setNote,
+    setNotes,
     setSaving,
+    setPhotosToActiveNote,
     updateNote,
 } = journalSlice.actions
 
