@@ -4,7 +4,7 @@
 - Imagenes en Cloudinary
 
 ## Deploy
-(demo)[https://jutaga.github.io/JournalApp/]
+[demo](https://jutaga.github.io/JournalApp/)
 
 ## Stack
 - React - Ts
